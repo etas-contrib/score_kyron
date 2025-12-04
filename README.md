@@ -1,18 +1,16 @@
 # score_kyron
 
-Repository for **Orchestration framework** and **safe async runtime** called **kyron** for Rust
+Repository for **safe async runtime** called **kyron** for Rust
 
 [![Nightly CIT](../../actions/workflows/component_integration_tests.yml/badge.svg)](../../actions/workflows/component_integration_tests.yml)
 [![Nightly CIT (Bazel)](../../actions/workflows/component_integration_tests_bazel.yml/badge.svg)](../../actions/workflows/component_integration_tests_bazel.yml)
-[![Orchestrator Examples](https://img.shields.io/badge/Orchestrator-examples-blue?style=flat&link=https%3A%2F%2Fgithub.com%2Feclipse-score%2Forchestrator%2Ftree%2Fmain%2Fsrc%2Forchestration%2Fexamples)](src/orchestration/examples)
-[![Kyron Examples](https://img.shields.io/badge/Kyron-examples-red?style=flat&link=https%3A%2F%2Fgithub.com%2Feclipse-score%2Forchestrator%2Ftree%2Fmain%2Fsrc%2Fkyron)](src/kyron/README.md)
+[![Kyron Examples](https://img.shields.io/badge/Kyron-examples-red?style=flat&link=https%3A%2F%2Fgithub.com%2Feclipse-score%kyron%2Ftree%2Fmain%2Fsrc%2Fkyron)](src/kyron/README.md)
 
 
 
 ## Feature status and roadmap
 
 * [Async Runtime](src/kyron/doc/features.md)
-* [Orchestration](src/orchestration/doc/features.md)
 
 ## Continuous Integration Nightly Tests
 

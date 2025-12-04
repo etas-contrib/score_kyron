@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test", "rust_binary")
 load("@score_kyron_crates//:defs.bzl", "all_crate_deps")
 
 _COMMON_DEPS = [
@@ -18,6 +18,10 @@ _COMMON_DEPS = [
 ] + all_crate_deps(
     normal = True,
 )
+
+_EXAMPLE_DEPS = _COMMON_DEPS + [
+    ":libkyron",
+]
 
 rust_library(
     name = "libkyron",
@@ -59,4 +63,16 @@ rust_test(
         "//src/kyron:libkyron",
         "//src/kyron-testing:test_utils",
     ],
+)
+
+rust_binary(
+    name = "select",
+    srcs = [
+        "examples/select.rs",
+    ],
+    proc_macro_deps = [
+        "//src/kyron-macros:runtime_macros",
+    ],
+    visibility = ["//visibility:public"],
+    deps = _EXAMPLE_DEPS,
 )
