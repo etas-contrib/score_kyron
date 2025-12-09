@@ -1,114 +1,185 @@
+# score_kyron
 
-# C++ & Rust Bazel Template Repository
+Repository for **safe async runtime** called **kyron** for Rust
 
-This repository serves as a **template** for setting up **C++ and Rust projects** using **Bazel**.
-It provides a **standardized project structure**, ensuring best practices for:
+[![Nightly CIT](../../actions/workflows/component_integration_tests.yml/badge.svg)](../../actions/workflows/component_integration_tests.yml)
+[![Nightly CIT (Bazel)](../../actions/workflows/component_integration_tests_bazel.yml/badge.svg)](../../actions/workflows/component_integration_tests_bazel.yml)
+[![Kyron Examples](https://img.shields.io/badge/Kyron-examples-red?style=flat&link=https%3A%2F%2Fgithub.com%2Feclipse-score%kyron%2Ftree%2Fmain%2Fsrc%2Fkyron)](src/kyron/README.md)
 
-- **Build configuration** with Bazel.
-- **Testing** (unit and integration tests).
-- **Documentation** setup.
-- **CI/CD workflows**.
-- **Development environment** configuration.
 
----
 
-## 📂 Project Structure
+## Feature status and roadmap
 
-| File/Folder                         | Description                                       |
-| ----------------------------------- | ------------------------------------------------- |
-| `README.md`                         | Short description & build instructions            |
-| `src/`                              | Source files for the module                       |
-| `tests/`                            | Unit tests (UT) and integration tests (IT)        |
-| `examples/`                         | Example files used for guidance                   |
-| `docs/`                             | Documentation (Doxygen for C++ / mdBook for Rust) |
-| `.github/workflows/`                | CI/CD pipelines                                   |
-| `.vscode/`                          | Recommended VS Code settings                      |
-| `.bazelrc`, `MODULE.bazel`, `BUILD` | Bazel configuration & settings                    |
-| `project_config.bzl`                | Project-specific metadata for Bazel macros        |
-| `LICENSE.md`                        | Licensing information                             |
-| `CONTRIBUTION.md`                   | Contribution guidelines                           |
+* [Async Runtime](src/kyron/doc/features.md)
 
----
+## Continuous Integration Nightly Tests
 
-## 🚀 Getting Started
+This repository includes two GitHub Actions workflows for component integration testing:
 
-### 1️⃣ Clone the Repository
+### Component Integration Tests (Cargo-based)
+- **Schedule**: Runs nightly at 1:45 UTC
+- **Build System**: Uses Cargo for Rust components
+- **Testing**: Executes Python test suite with pytest
+- **Nightly Mode**: Runs tests 20 times with `--count 20 --repeat-scope session` for enhanced
+  reliability testing
+- **Triggers**: Push/PR to main/development branches, and scheduled nightly runs
 
-```sh
-git clone https://github.com/eclipse-score/YOUR_PROJECT.git
-cd YOUR_PROJECT
+### Component Integration Tests (Bazel-based)
+- **Schedule**: Runs nightly at 1:15 UTC
+- **Build System**: Uses Bazel for all components
+- **Testing**: Builds Rust test scenarios and runs Python component integration tests
+- **Nightly Mode**: Uses `cit_repeat` target for flake detection
+- **Triggers**: Push/PR to main/development branches, and scheduled nightly runs
+
+Monitor via the status badges above and the Actions tab
+
+## Setup
+
+### System dependencies
+
+```bash
+sudo apt-get update
+sudo apt-get install -y curl build-essential protobuf-compiler libclang-dev git python3-dev python-is-python3 python3-venv
 ```
 
-### 2️⃣ Build the Examples of module
+### Rust installation
 
-> DISCLAIMER: Depending what module implements, it's possible that different
-> configuration flags needs to be set on command line.
+[Install Rust using rustup](https://www.rust-lang.org/tools/install)
 
-To build all targets of the module the following command can be used:
-
-```sh
-bazel build //src/...
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ```
 
-This command will instruct Bazel to build all targets that are under Bazel
-package `src/`. The ideal solution is to provide single target that builds
-artifacts, for example:
+### Bazel installation
 
-```sh
-bazel build //src/<module_name>:release_artifacts
+[Install Bazel using Bazelisk](https://bazel.build/install/bazelisk)
+
+```bash
+curl --proto '=https' -sSfOL https://github.com/bazelbuild/bazelisk/releases/download/v1.26.0/bazelisk-amd64.deb
+dpkg -i bazelisk-amd64.deb
+rm bazelisk-amd64.deb
 ```
 
-where `:release_artifacts` is filegroup target that collects all release
-artifacts of the module.
+Correct Bazel version will be installed on first run, based on `bazelversion` file.
 
-> NOTE: This is just proposal, the final decision is on module maintainer how
-> the module code needs to be built.
+## Build
 
-### 3️⃣ Run Tests
+List all targets:
 
-```sh
-bazel test //tests/...
+```bash
+bazel query //...
 ```
 
----
+Build selected target:
 
-## 🛠 Tools & Linters
-
-The template integrates **tools and linters** from **centralized repositories** to ensure consistency across projects.
-
-- **C++:** `clang-tidy`, `cppcheck`, `Google Test`
-- **Rust:** `clippy`, `rustfmt`, `Rust Unit Tests`
-- **CI/CD:** GitHub Actions for automated builds and tests
-
----
-
-## 📖 Documentation
-
-- A **centralized docs structure** is planned.
-
----
-
-## ⚙️ `project_config.bzl`
-
-This file defines project-specific metadata used by Bazel macros, such as `dash_license_checker`.
-
-### 📌 Purpose
-
-It provides structured configuration that helps determine behavior such as:
-
-- Source language type (used to determine license check file format)
-- Safety level or other compliance info (e.g. ASIL level)
-
-### 📄 Example Content
-
-```python
-PROJECT_CONFIG = {
-    "asil_level": "QM",  # or "ASIL-A", "ASIL-B", etc.
-    "source_code": ["cpp", "rust"]  # Languages used in the module
-}
+```bash
+bazel build <TARGET_NAME>
 ```
 
-### 🔧 Use Case
+Build all targets:
 
-When used with macros like `dash_license_checker`, it allows dynamic selection of file types
- (e.g., `cargo`, `requirements`) based on the languages declared in `source_code`.
+```bash
+bazel build //...
+```
+
+## Build for QNX8
+
+### Preparations
+
+Please follow
+[Where to obtain the QNX 8.0 SDP](https://github.com/eclipse-score/toolchains_qnx?tab=readme-ov-file#where-to-obtain-the-qnx-80-sdp)
+to get access to QNX8 and how to setup QNX8 for `S-CORE`. In above link You will also find an
+instructions how to replace SDP in case You need to use other one (ie HW specific).
+
+
+### Building
+```bash
+./scripts/build_qnx8.sh BAZEL_TARGET (default is //src/...)
+```
+
+## Run
+
+List all binary targets, including examples:
+
+```bash
+bazel query 'kind(rust_binary, //src/...)'
+```
+
+> Bazel is not able to distinguish between examples and regular executables.
+
+Run selected target:
+
+```bash
+bazel run <TARGET_NAME>
+```
+
+## Test
+
+List all test targets:
+
+```bash
+bazel query 'kind(rust_test, //...)'
+```
+
+Run all tests:
+
+```bash
+bazel test //...
+```
+
+Run unit tests (tests from `src/` directory):
+
+```bash
+bazel test //src/...
+```
+
+Run selected test target:
+
+```bash
+bazel test <TARGET_NAME>
+```
+
+## Cargo-based operations
+
+Please use **Bazel** whenever possible. However for easy development we provide a build based on
+**Cargo**
+
+### Build with Cargo
+
+It's recommended to use `cargo xtask`. It has the advantage of using separate build directories for
+each task causing no need to rebuild from scratch for different types of checks
+
+Build using `xtask` - debug and release:
+
+```bash
+cargo xtask build
+cargo xtask build:release
+```
+
+Build using `cargo` directly:
+
+```bash
+cargo build
+```
+
+### Run with Cargo
+
+List all examples:
+
+```bash
+cargo xtask run --example
+```
+
+Using `cargo xtask`:
+
+```bash
+cargo xtask run --example <EXAMPLE_NAME>
+```
+
+### Run unit tests with Cargo
+
+Using `cargo xtask`:
+
+```bash
+cargo xtask build:test --lib
+```

@@ -20,11 +20,11 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Module Template Project"
-project_url = "https://eclipse-score.github.io/module_template/"
-project_prefix = "MODULE_TEMPLATE_"
+project = "Kyron"
+project_url = "https://github.com/eclipse-score/kyron"
+project_prefix = "KYRON_"
 author = "S-CORE"
-version = "0.1"
+version = "0.0.1"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -33,6 +33,7 @@ version = "0.1"
 extensions = [
     "sphinx_design",
     "sphinx_needs",
+    "myst_parser",
     "sphinxcontrib.plantuml",
     "score_plantuml",
     "score_metamodel",
@@ -40,6 +41,8 @@ extensions = [
     "score_source_code_linker",
     "score_layout",
 ]
+
+myst_enable_extensions = ["colon_fence"]
 
 exclude_patterns = [
     # The following entries are not required when building the documentation via 'bazel
@@ -49,6 +52,12 @@ exclude_patterns = [
     "bazel-*",
     ".venv_docs",
 ]
+
+# Enable markdown rendering
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 
 templates_path = ["templates"]
 

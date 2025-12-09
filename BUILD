@@ -10,8 +10,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-
 load("@score_docs_as_code//:docs.bzl", "docs")
+load("@score_toolchains_qnx//rules/fs:ifs.bzl", "qnx_ifs")
 load("@score_tooling//:defs.bzl", "copyright_checker", "dash_license_checker", "setup_starpls", "use_format_targets")
 load("//:project_config.bzl", "PROJECT_CONFIG")
 
@@ -23,18 +23,50 @@ setup_starpls(
 copyright_checker(
     name = "copyright",
     srcs = [
+        ".github",
+        "component_integration_tests",
+        "docs",
+        "internal_docs",
+        "patches",
+        "scripts",
         "src",
         "tests",
+        "virtualization",
         "//:BUILD",
         "//:MODULE.bazel",
+        "//:project_config.bzl",
     ],
     config = "@score_tooling//cr_checker/resources:config",
     template = "@score_tooling//cr_checker/resources:templates",
     visibility = ["//visibility:public"],
 )
 
+# Needed for Dash tool to check python dependency licenses.
+# This is a workaround to filter out local packages from the Cargo.lock file.
+# The tool is intended for third-party content.
+genrule(
+    name = "filtered_cargo_lock",
+    srcs = ["Cargo.lock"],
+    outs = ["Cargo.lock.filtered"],
+    cmd = """
+    awk '
+    BEGIN { skip = 0; data = "" }
+    /^\\[\\[package\\]\\]/ {
+        if (data != "" && !skip) print data;
+        skip = 1;
+        data = $$0;
+        next;
+    }
+    data != "" { data = data "\\n" $$0 }
+    # any package that has a "source = " line will not be skipped.
+    /^source = / { skip = 0 }
+    END { if (data != "" && !skip) print data }
+    ' $(location Cargo.lock) > $@
+    """,
+)
+
 dash_license_checker(
-    src = "//examples:cargo_lock",
+    src = ":filtered_cargo_lock",
     file_type = "",  # let it auto-detect based on project_config
     project_config = PROJECT_CONFIG,
     visibility = ["//visibility:public"],
@@ -43,6 +75,16 @@ dash_license_checker(
 # Add target for formatting checks
 use_format_targets()
 
+exports_files([
+    "MODULE.bazel",
+])
+
+# Creates all documentation targets:
+# - `:docs` for building documentation at build-time
 docs(
+    data = [
+        # "@score_platform//:needs_json",
+        # "@score_process//:needs_json",
+    ],
     source_dir = "docs",
 )

@@ -1,0 +1,81 @@
+[workspace]
+resolver = "2"
+
+# Split to default members without component integration tests.
+# Used when executing cargo from project root.
+default-members = [
+    "src/kyron-foundation",
+    "src/kyron",
+    "src/kyron-testing",
+    "src/kyron-testing-macros",
+    "src/kyron-macros",
+    "src/logging_tracing",
+    "src/xtask",
+]
+# Include component integration tests as a member for IDE support and Bazel builds.
+members = [
+    "src/kyron-foundation",
+    "src/kyron",
+    "src/kyron-testing",
+    "src/kyron-testing-macros",
+    "src/kyron-macros",
+    "src/logging_tracing",
+    "src/xtask",
+    "component_integration_tests/rust_test_scenarios",
+]
+
+
+[workspace.package]
+version = "0.0.3"
+edition = "2021"
+license-file = "LICENSE.md"
+authors = ["S-CORE Contributors"]
+
+
+[workspace.dependencies]
+kyron = { path = "src/kyron", default-features = false }
+kyron-foundation = { path = "src/kyron-foundation" }
+kyron-testing-macros = { path = "src/kyron-testing-macros" }
+kyron-macros = { path = "src/kyron-macros" }
+kyron-testing = { path = "src/kyron-testing" }
+
+logging_tracing = { path = "src/logging_tracing", default-features = false }
+xtask = { path = "src/xtask" }
+
+
+iceoryx2 = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8", default-features = false }
+iceoryx2-cal = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-container = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-derive-macros = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-elementary = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-elementary-traits = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-lock-free = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-memory = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-posix = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-system-types = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-testing = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-bb-threadsafe = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+iceoryx2-pal-concurrency-sync = { git = "https://github.com/eclipse-iceoryx/iceoryx2.git", rev = "d3d1c9a727d3dc405733081923be5dba8213d6d8" }
+libc = "0.2.171"
+tracing = "0.1.41"
+log = "0.4.28"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["json"] }
+tracing-perfetto-sdk-layer = "0.12.0"
+tracing-perfetto-sdk-schema = "0.12.0"
+tracing-perfetto-sdk-sys = "0.12.0"
+
+[patch.crates-io]
+# Use Qorix-forked version due to lack of Bazel support
+tracing-perfetto-sdk-layer = { git = "https://github.com/qorix-group/tracing-perfetto-sdk.git", rev = "e27f6fc5bbad0c8cdf0c2c37b43e955467187199" }
+tracing-perfetto-sdk-schema = { git = "https://github.com/qorix-group/tracing-perfetto-sdk.git", rev = "e27f6fc5bbad0c8cdf0c2c37b43e955467187199" }
+tracing-perfetto-sdk-sys = { git = "https://github.com/qorix-group/tracing-perfetto-sdk.git", rev = "e27f6fc5bbad0c8cdf0c2c37b43e955467187199" }
+
+
+[workspace.lints.clippy]
+std_instead_of_core = "warn"
+alloc_instead_of_core = "warn"
+
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(loom)'] }
