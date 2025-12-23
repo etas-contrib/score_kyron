@@ -256,13 +256,16 @@ impl Inner {
     fn process_expired(&mut self, info: &ExpireInfo) {
         let iter = self.levels[info.level as usize].aquire_slot(info);
 
-        for e in iter {
-            let data = unsafe { e.as_ref() };
+        for mut e in iter {
+            let data = unsafe { e.as_mut() };
 
             //TODO: We could keep waker list on side to fire them outside of the lock. This is next step improvement once we will connect this all into workers
             if data.data.expire_at <= info.deadline {
                 // Wake up the task
-                data.data.waker.wake_by_ref();
+
+                // Instead going over waker and waking by ref which is less efficient, we just replace with noop and wake by value
+                let waker = core::mem::replace(&mut data.data.waker, Waker::noop().clone());
+                waker.wake();
 
                 unsafe {
                     ::core::ptr::drop_in_place(e.as_ptr());
