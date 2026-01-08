@@ -33,15 +33,13 @@ fn wake(data: *const ()) {
     let task_ref = unsafe { TaskRef::from_raw(task_header_ptr) };
 
     task_ref.schedule();
-
-    drop(task_ref); // wake uses move semantic, so we are owner of data now, so we need to cleanup
 }
 
 fn wake_by_ref(data: *const ()) {
     let task_header_ptr = data as *const TaskHeader;
     let task_ref = unsafe { TaskRef::from_raw(task_header_ptr) };
 
-    task_ref.schedule();
+    task_ref.schedule_by_ref();
 
     ::core::mem::forget(task_ref); // don't touch refcount from our data since this is done by drop_waker
 }

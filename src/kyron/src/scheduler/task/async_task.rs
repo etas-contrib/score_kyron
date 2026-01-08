@@ -543,20 +543,38 @@ impl TaskRef {
     }
 
     ///
-    /// Proxy to `AsyncTask<T>::schedule`
+    /// Proxy to `AsyncTask<T>::schedule_by_ref`
     ///
-    pub(crate) fn schedule(&self) {
+    pub(crate) fn schedule_by_ref(&self) {
         unsafe {
             (self.header.as_ref().vtable.schedule)(self.header, self.clone());
         }
     }
 
     ///
+    /// Proxy to `AsyncTask<T>::schedule`
+    ///
+    pub(crate) fn schedule(self) {
+        unsafe {
+            (self.header.as_ref().vtable.schedule)(self.header, self);
+        }
+    }
+
+    ///
     /// Proxy to `AsyncTask<T>::schedule_safety`
     ///
-    pub(crate) fn schedule_safety(&self) {
+    pub(crate) fn schedule_safety_by_ref(&self) {
         unsafe {
             (self.header.as_ref().vtable.schedule_safety)(self.header, self.clone());
+        }
+    }
+
+    ///
+    /// Proxy to `AsyncTask<T>::schedule_safety`
+    ///
+    pub(crate) fn schedule_safety(self) {
+        unsafe {
+            (self.header.as_ref().vtable.schedule_safety)(self.header, self);
         }
     }
 
