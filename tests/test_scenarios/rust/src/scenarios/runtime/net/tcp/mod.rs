@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 mod server;
 mod tcp_listener;
 mod tcp_stream;
@@ -23,7 +35,10 @@ async fn handle_connection_with_echo_response(mut stream: TcpStream) {
     // Addresses.
     let peer_addr = stream.peer_addr().expect("Failed to get peer address");
     let local_addr = stream.local_addr().expect("Failed to get local address");
-    info!(peer_addr = format!("{peer_addr:?}"), local_addr = format!("{local_addr:?}"));
+    info!(
+        peer_addr = format!("{peer_addr:?}"),
+        local_addr = format!("{local_addr:?}")
+    );
 
     // Read.
     let mut buf = [0u8; 1024];
@@ -31,13 +46,13 @@ async fn handle_connection_with_echo_response(mut stream: TcpStream) {
     match stream.read(&mut buf).await {
         Ok(0) => {
             info!("Client closed connection");
-        }
+        },
         Ok(n) => {
             info!("Read {n} bytes");
-        }
+        },
         Err(e) => {
             info!("Read error: {e:?}");
-        }
+        },
     }
 
     let message_read = String::from_utf8(buf.to_vec()).expect("Failed to convert string from bytes");
@@ -50,12 +65,12 @@ async fn handle_connection_with_echo_response(mut stream: TcpStream) {
     match stream.write(data).await {
         Ok(0) => {
             info!("Client closed connection during write");
-        }
+        },
         Ok(n) => {
             info!("Written {n} bytes");
-        }
+        },
         Err(e) => {
             info!("Write error: {e:?}");
-        }
+        },
     }
 }

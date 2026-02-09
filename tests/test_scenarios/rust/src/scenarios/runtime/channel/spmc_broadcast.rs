@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use crate::internals::execution_barrier::RuntimeJoiner;
 use crate::internals::runtime_helper::Runtime;
 use test_scenarios_rust::scenario::Scenario;
@@ -25,7 +37,8 @@ struct TestInput {
 impl TestInput {
     pub fn new(input: &str) -> Self {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input JSON string in TestInput::new");
-        serde_json::from_value(v["test"].clone()).expect("Failed to parse 'test' field from input JSON in TestInput::new")
+        serde_json::from_value(v["test"].clone())
+            .expect("Failed to parse 'test' field from input JSON in TestInput::new")
     }
 }
 
@@ -34,7 +47,7 @@ fn send_value<const SIZE: usize>(sender: &spmc_broadcast::Sender<u64, SIZE>, val
     match result {
         Err(e) => {
             info!(id = "send_task", error = format!("{e:?}"));
-        }
+        },
         Ok(_) => info!(id = "send_task", data = value),
     }
 }
@@ -49,21 +62,29 @@ async fn send_task<const SIZE: usize>(sender: spmc_broadcast::Sender<u64, SIZE>,
     send_data(&sender, &data_to_send);
 }
 
-async fn receive_data<const SIZE: usize>(name: &str, receiver: &mut spmc_broadcast::Receiver<u64, SIZE>, read_data_count: usize) {
+async fn receive_data<const SIZE: usize>(
+    name: &str,
+    receiver: &mut spmc_broadcast::Receiver<u64, SIZE>,
+    read_data_count: usize,
+) {
     for _ndx in 0..read_data_count {
         let result = receiver.recv().await;
         match result {
             Some(val) => {
                 info!(id = name, data = val);
-            }
+            },
             None => {
                 info!(id = name, error = "Provider dropped");
-            }
+            },
         }
     }
 }
 
-async fn receive_task<const SIZE: usize>(name: String, mut receiver: spmc_broadcast::Receiver<u64, SIZE>, read_data_count: usize) {
+async fn receive_task<const SIZE: usize>(
+    name: String,
+    mut receiver: spmc_broadcast::Receiver<u64, SIZE>,
+    read_data_count: usize,
+) {
     receive_data(&name, &mut receiver, read_data_count).await;
 }
 
@@ -120,8 +141,10 @@ struct OverflowTestInput {
 
 impl OverflowTestInput {
     pub fn new(input: &str) -> Self {
-        let v: Value = serde_json::from_str(input).expect("Failed to parse input JSON string in OverflowTestInput::new");
-        serde_json::from_value(v["test"].clone()).expect("Failed to parse 'test' field from input JSON in OverflowTestInput::new")
+        let v: Value =
+            serde_json::from_str(input).expect("Failed to parse input JSON string in OverflowTestInput::new");
+        serde_json::from_value(v["test"].clone())
+            .expect("Failed to parse 'test' field from input JSON in OverflowTestInput::new")
     }
 }
 
@@ -141,7 +164,7 @@ impl SPMCBroadcastCreateReceiversOnly {
                 Some(cloned) => receivers.push(cloned),
                 None => {
                     info!(id = "receivers_handle_overflow");
-                }
+                },
             }
         }
 
@@ -163,7 +186,7 @@ impl SPMCBroadcastCreateReceiversOnly {
                 Some(subscribed) => receivers.push(subscribed),
                 None => {
                     info!(id = "receivers_handle_overflow");
-                }
+                },
             }
         }
 
@@ -217,7 +240,7 @@ impl SPMCBroadcastNumOfSubscribers {
                 Some(cloned) => receivers.push(cloned),
                 None => {
                     info!(id = "receivers_handle_overflow");
-                }
+                },
             }
             Self::log_subscriber_count(sender, "add_receiver");
         }
@@ -240,7 +263,7 @@ impl SPMCBroadcastNumOfSubscribers {
                 Some(subscribed) => receivers.push(subscribed),
                 None => {
                     info!(id = "receivers_handle_overflow");
-                }
+                },
             }
             Self::log_subscriber_count(sender, "add_receiver");
         }
@@ -567,7 +590,8 @@ struct HeavyTestInput {
 impl HeavyTestInput {
     pub fn new(input: &str) -> Self {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input JSON string in HeavyTestInput::new");
-        serde_json::from_value(v["test"].clone()).expect("Failed to parse 'test' field from input JSON in HeavyTestInput::new")
+        serde_json::from_value(v["test"].clone())
+            .expect("Failed to parse 'test' field from input JSON in HeavyTestInput::new")
     }
 }
 
@@ -587,7 +611,7 @@ impl SPMCBroadcastHeavyLoad {
                     } else {
                         panic!("Unexpected error: {e:?}");
                     }
-                }
+                },
                 Ok(_) => break,
             }
         }
@@ -599,18 +623,26 @@ impl SPMCBroadcastHeavyLoad {
         }
     }
 
-    async fn heavy_receive_task<const SIZE: usize>(name: String, mut receiver: spmc_broadcast::Receiver<u64, SIZE>, expected_data_count: u64) {
+    async fn heavy_receive_task<const SIZE: usize>(
+        name: String,
+        mut receiver: spmc_broadcast::Receiver<u64, SIZE>,
+        expected_data_count: u64,
+    ) {
         for expected_val in 0..expected_data_count {
             let result = receiver.recv().await;
             match result {
                 Some(val) => {
                     if val != expected_val {
-                        info!(id = name, iter = expected_val, error = format!("Expected {expected_val}, got {val}"));
+                        info!(
+                            id = name,
+                            iter = expected_val,
+                            error = format!("Expected {expected_val}, got {val}")
+                        );
                     }
-                }
+                },
                 None => {
                     info!(id = name, iter = expected_val, error = "Provider dropped");
-                }
+                },
             }
         }
     }

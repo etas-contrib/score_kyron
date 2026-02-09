@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use kyron::net::{TcpListener, TcpStream, UdpSocket};
 use serde::{de, Deserialize, Deserializer};
 use serde_json::Value;
@@ -61,7 +73,9 @@ pub async fn create_tcp_listener(connection_parameters: ConnectionParameters) ->
 }
 
 pub async fn create_tcp_stream(connection_parameters: ConnectionParameters) -> TcpStream {
-    let stream = TcpStream::connect(connection_parameters.address).await.expect("Failed to connect");
+    let stream = TcpStream::connect(connection_parameters.address)
+        .await
+        .expect("Failed to connect");
 
     // Set optional TTL.
     if let Some(ttl) = connection_parameters.ttl {

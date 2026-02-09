@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use crate::internals::execution_barrier::RuntimeJoiner;
 use crate::internals::runtime_helper::Runtime;
 use crate::internals::thread_params::{current_thread_priority_params, ThreadPriorityParams};
@@ -86,7 +98,11 @@ impl Scenario for SafetyWorkerFailedTaskHandling {
 async fn outer_task() -> Result<(), String> {
     info!(name = "outer_task_begin");
     let res = safety::spawn(failing_task()).await.expect("Failed to get task result");
-    info!(name = "outer_task_end", is_error = res.is_err(), safe_task_handler = true);
+    info!(
+        name = "outer_task_end",
+        is_error = res.is_err(),
+        safe_task_handler = true
+    );
     res
 }
 
@@ -206,15 +222,25 @@ async fn successful_task() -> Result<(), String> {
 
 async fn nesting_safe_successful_task() -> Result<(), String> {
     info!(name = "nesting_successful_begin");
-    let res = safety::spawn(successful_task()).await.expect("Failed to get task result");
-    info!(name = "nesting_successful_end", is_error = res.is_err(), safe_task_handler = true);
+    let res = safety::spawn(successful_task())
+        .await
+        .expect("Failed to get task result");
+    info!(
+        name = "nesting_successful_end",
+        is_error = res.is_err(),
+        safe_task_handler = true
+    );
     res
 }
 
 async fn nesting_safe_failing_task() -> Result<(), String> {
     info!(name = "nesting_failing_begin");
     let res = safety::spawn(failing_task()).await.expect("Failed to get task result");
-    info!(name = "nesting_failing_end", is_error = res.is_err(), safe_task_handler = true);
+    info!(
+        name = "nesting_failing_end",
+        is_error = res.is_err(),
+        safe_task_handler = true
+    );
     res
 }
 
@@ -339,7 +365,9 @@ impl Scenario for SafetyWorkerSpawnFromReusable {
             let pool_item = pool.next(failing_task()).expect("Failed to get pool item");
 
             info!(name = "main_begin");
-            let res = safety::spawn_from_reusable(pool_item).await.expect("Failed to get task result");
+            let res = safety::spawn_from_reusable(pool_item)
+                .await
+                .expect("Failed to get task result");
             info!(name = "main_end", is_error = res.is_err(), safe_task_handler = true);
         });
 
@@ -359,8 +387,14 @@ impl Scenario for SafetyWorkerSpawnOnDedicated {
     ///
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let mut rt = builder.build();
 
         rt.block_on(async move {
@@ -391,8 +425,14 @@ impl Scenario for SafetyWorkerSpawnFromBoxedOnDedicated {
     ///
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let mut rt = builder.build();
 
         rt.block_on(async move {
@@ -423,8 +463,14 @@ impl Scenario for SafetyWorkerSpawnFromReusableOnDedicated {
     ///
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let mut rt = builder.build();
 
         rt.block_on(async move {

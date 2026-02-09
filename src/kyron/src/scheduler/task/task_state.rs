@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 use kyron_foundation::sync::foundation_atomic::FoundationAtomicU32;
 
 /// TODO: For now no use-case for IDLE, I keep it.
@@ -331,21 +331,27 @@ impl TaskState {
     ///
     /// Apply value from action and returns value from action
     ///
-    fn fetch_update_with_return<T: FnMut(TaskStateSnapshot) -> (Option<TaskStateSnapshot>, U), U>(&self, mut f: T) -> U {
+    fn fetch_update_with_return<T: FnMut(TaskStateSnapshot) -> (Option<TaskStateSnapshot>, U), U>(
+        &self,
+        mut f: T,
+    ) -> U {
         let mut val = self.s.load(::core::sync::atomic::Ordering::Acquire);
         loop {
             let (state, ret) = f(TaskStateSnapshot(val));
             match state {
                 Some(s) => {
-                    let res = self
-                        .s
-                        .compare_exchange(val, s.0, ::core::sync::atomic::Ordering::AcqRel, ::core::sync::atomic::Ordering::Acquire);
+                    let res = self.s.compare_exchange(
+                        val,
+                        s.0,
+                        ::core::sync::atomic::Ordering::AcqRel,
+                        ::core::sync::atomic::Ordering::Acquire,
+                    );
 
                     match res {
                         Ok(_) => break ret,
                         Err(actual) => val = actual,
                     }
-                }
+                },
                 None => break ret,
             }
         }

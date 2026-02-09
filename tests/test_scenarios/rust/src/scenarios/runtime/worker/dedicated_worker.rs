@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use crate::internals::execution_barrier::{MultiExecutionBarrier, RuntimeJoiner};
 use crate::internals::runtime_helper::{DedicatedWorkerConfig, Runtime};
 use crate::internals::thread_params::{current_thread_affinity, current_thread_priority_params, ThreadPriorityParams};
@@ -32,7 +44,7 @@ fn wait_result_str(wait_result: Result<(), String>, wait_time: &Duration) -> &'s
             } else {
                 "other"
             }
-        }
+        },
     }
 }
 
@@ -41,7 +53,12 @@ fn print_id(id: &str) {
     info!(id);
 }
 
-async fn blocking_task(id: String, block_condition: Arc<(Condvar, Mutex<bool>)>, notifier: ThreadReadyNotifier, info_fn: fn(&str)) {
+async fn blocking_task(
+    id: String,
+    block_condition: Arc<(Condvar, Mutex<bool>)>,
+    notifier: ThreadReadyNotifier,
+    info_fn: fn(&str),
+) {
     let (cv, mtx) = &*block_condition;
     let mut block = mtx.lock().expect("Unable to lock mutex");
 
@@ -95,8 +112,14 @@ impl Scenario for OnlyDedicatedWorkers {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let rt = builder.build();
 
         common_run(rt, dedicated_workers, print_id);
@@ -148,8 +171,14 @@ impl Scenario for ThreadPriority {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let rt = builder.build();
 
         common_run(rt, dedicated_workers, print_id_and_params);
@@ -172,8 +201,14 @@ impl Scenario for ThreadAffinity {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let rt = builder.build();
 
         common_run(rt, dedicated_workers, print_id_and_affinity);
@@ -191,8 +226,14 @@ impl Scenario for BlockAllRegularWorkOnDedicated {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let num_workers = exec_engine.workers;
         let mut rt = builder.build();
 
@@ -217,7 +258,12 @@ impl Scenario for BlockAllRegularWorkOnDedicated {
                 let reg_worker_id = format!("worker_{id}");
                 let notifier = reg_notifiers.pop().expect("Failed to pop notifier");
 
-                joiner.add_handle(spawn(blocking_task(reg_worker_id, reg_block_condition.clone(), notifier, print_id)));
+                joiner.add_handle(spawn(blocking_task(
+                    reg_worker_id,
+                    reg_block_condition.clone(),
+                    notifier,
+                    print_id,
+                )));
             }
 
             // Wait for regular workers to be blocked.
@@ -229,7 +275,12 @@ impl Scenario for BlockAllRegularWorkOnDedicated {
                 let unique_worker_id = UniqueWorkerId::from(dedicated_worker.id.as_str());
                 let notifier = ded_notifiers.pop().expect("Failed to pop notifier");
                 joiner.add_handle(spawn_on_dedicated(
-                    blocking_task(dedicated_worker.id.clone(), ded_block_condition.clone(), notifier, print_id),
+                    blocking_task(
+                        dedicated_worker.id.clone(),
+                        ded_block_condition.clone(),
+                        notifier,
+                        print_id,
+                    ),
                     unique_worker_id,
                 ));
             }
@@ -258,8 +309,14 @@ impl Scenario for BlockDedicatedWorkOnRegular {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found");
-        let dedicated_workers = exec_engine.dedicated_workers.clone().expect("No dedicated workers configuration found");
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found");
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .clone()
+            .expect("No dedicated workers configuration found");
         let num_workers = exec_engine.workers;
         let mut rt = builder.build();
 
@@ -284,7 +341,12 @@ impl Scenario for BlockDedicatedWorkOnRegular {
                 let unique_worker_id = UniqueWorkerId::from(dedicated_worker.id.as_str());
                 let notifier = ded_notifiers.pop().expect("Failed to pop notifier");
                 joiner.add_handle(spawn_on_dedicated(
-                    blocking_task(dedicated_worker.id.clone(), ded_block_condition.clone(), notifier, print_id),
+                    blocking_task(
+                        dedicated_worker.id.clone(),
+                        ded_block_condition.clone(),
+                        notifier,
+                        print_id,
+                    ),
                     unique_worker_id,
                 ));
             }
@@ -297,7 +359,12 @@ impl Scenario for BlockDedicatedWorkOnRegular {
             for id in 1..num_workers {
                 let reg_worker_id = format!("worker_{id}");
                 let notifier = reg_notifiers.pop().expect("Failed to pop notifier");
-                joiner.add_handle(spawn(blocking_task(reg_worker_id, reg_block_condition.clone(), notifier, print_id)));
+                joiner.add_handle(spawn(blocking_task(
+                    reg_worker_id,
+                    reg_block_condition.clone(),
+                    notifier,
+                    print_id,
+                )));
             }
 
             // Wait for regular workers to be blocked.
@@ -359,9 +426,18 @@ impl Scenario for MultipleTasks {
     fn run(&self, input: &str) -> Result<(), String> {
         let builder = Runtime::from_json(input)?;
         let num_tasks = MultipleTasksTestInput::from_json(input).num_tasks;
-        let exec_engine = builder.exec_engines().first().expect("No execution engine configuration found").clone();
-        let dedicated_workers = exec_engine.dedicated_workers.expect("No dedicated workers configuration found");
-        let dedicated_worker = dedicated_workers.first().expect("No dedicated worker configuration found").clone();
+        let exec_engine = builder
+            .exec_engines()
+            .first()
+            .expect("No execution engine configuration found")
+            .clone();
+        let dedicated_workers = exec_engine
+            .dedicated_workers
+            .expect("No dedicated workers configuration found");
+        let dedicated_worker = dedicated_workers
+            .first()
+            .expect("No dedicated worker configuration found")
+            .clone();
         let mut rt = builder.build();
 
         rt.block_on(async move {

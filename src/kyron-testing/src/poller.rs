@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 use crate::waker::noop_waker;
 
@@ -26,10 +26,14 @@ pub struct TestingFuturePoller<OutType> {
 
 impl<OutType> TestingFuturePoller<OutType> {
     pub fn new(future: impl Future<Output = OutType> + 'static + Send) -> TestingFuturePoller<OutType> {
-        Self { future: Box::pin(future) }
+        Self {
+            future: Box::pin(future),
+        }
     }
 
-    pub fn from_boxed(boxed_future: Pin<Box<dyn Future<Output = OutType> + 'static + Send>>) -> TestingFuturePoller<OutType> {
+    pub fn from_boxed(
+        boxed_future: Pin<Box<dyn Future<Output = OutType> + 'static + Send>>,
+    ) -> TestingFuturePoller<OutType> {
         Self { future: boxed_future }
     }
 

@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use crate::internals::net_helper::{create_udp_listener, ConnectionParameters};
 use crate::internals::runtime_helper::Runtime;
 use kyron::{net::UdpSocket, spawn};
@@ -17,17 +29,17 @@ async fn receive_and_echo(udp_socket: Arc<UdpSocket>) {
                     Ok(m) => {
                         written += m;
                         debug!("Written {} bytes", m);
-                    }
+                    },
                     Err(e) => {
                         info!("Write error: {:?}", e);
                         break;
-                    }
+                    },
                 }
             }
-        }
+        },
         Err(e) => {
             info!("Read error: {:?}", e);
-        }
+        },
     }
 }
 
@@ -40,7 +52,8 @@ impl Scenario for UdpServerEcho {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let mut rt = Runtime::from_json(input)?.build();
-        let connection_parameters = ConnectionParameters::from_json(input).expect("Failed to parse connection parameters");
+        let connection_parameters =
+            ConnectionParameters::from_json(input).expect("Failed to parse connection parameters");
 
         rt.block_on(async move {
             let listener = Arc::new(create_udp_listener(connection_parameters).await);
@@ -64,7 +77,8 @@ impl Scenario for UdpServerLogTTL {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let mut rt = Runtime::from_json(input)?.build();
-        let connection_parameters = ConnectionParameters::from_json(input).expect("Failed to parse connection parameters");
+        let connection_parameters =
+            ConnectionParameters::from_json(input).expect("Failed to parse connection parameters");
 
         rt.block_on(async move {
             let listener = Arc::new(create_udp_listener(connection_parameters).await);

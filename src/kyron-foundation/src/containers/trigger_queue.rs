@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 use crate::prelude::*;
 use crate::{prelude::FoundationAtomicBool, types::CommonErrors};
@@ -73,7 +73,9 @@ impl<T> TriggerQueueConsumer<T> {
 
 impl<T> Drop for TriggerQueueConsumer<T> {
     fn drop(&mut self) {
-        self.queue.has_consumer.store(false, ::core::sync::atomic::Ordering::SeqCst);
+        self.queue
+            .has_consumer
+            .store(false, ::core::sync::atomic::Ordering::SeqCst);
     }
 }
 
@@ -347,7 +349,7 @@ mod tests {
                     Ok(val) => {
                         sum += val;
                         received += 1;
-                    }
+                    },
                     Err(CommonErrors::Timeout) => continue,
                     Err(_) => panic!("Unexpected error"),
                 }

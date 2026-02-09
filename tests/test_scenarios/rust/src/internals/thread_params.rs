@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use std::mem::{size_of, MaybeUninit};
 
 /// Get affinity of current thread.
@@ -78,7 +90,11 @@ pub fn current_thread_priority_params() -> ThreadPriorityParams {
         let thread = libc::pthread_self();
         let mut policy: libc::c_int = -1;
         let mut param = MaybeUninit::<libc::sched_param>::zeroed().assume_init();
-        let rc = libc::pthread_getschedparam(thread, &mut policy as *mut libc::c_int, &mut param as *mut libc::sched_param);
+        let rc = libc::pthread_getschedparam(
+            thread,
+            &mut policy as *mut libc::c_int,
+            &mut param as *mut libc::sched_param,
+        );
         if rc != 0 {
             let errno = *libc::__errno_location();
             panic!("libc::pthread_getschedparam failed, rc: {rc}, errno: {errno}");

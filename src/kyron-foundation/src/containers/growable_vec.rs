@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 use crate::containers::vector_extension::VectorExtension;
 use ::core::{
@@ -165,7 +165,9 @@ impl<T> Into<Vec<T>> for GrowableVec<T> {
 
         // Reverse order
         for _ in 0..self.len() {
-            first.push(self.pop().unwrap()).expect("Failed to push value during conversion");
+            first
+                .push(self.pop().unwrap())
+                .expect("Failed to push value during conversion");
         }
 
         let len = first.len();

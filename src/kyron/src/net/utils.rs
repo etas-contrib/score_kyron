@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 use core::net::{AddrParseError, SocketAddr};
 use std::io::ErrorKind;
@@ -52,7 +52,7 @@ impl ToSocketAddrs for &str {
                 Err(e) => {
                     error!("Failed to parse socket address: {}", e);
                     Err(std::io::Error::from(ErrorKind::Unsupported))
-                }
+                },
             }
         }
     }

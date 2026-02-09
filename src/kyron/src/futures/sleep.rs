@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 use crate::{scheduler::driver::Drivers, time::clock::*};
 use ::core::{future::Future, task::Waker, time::Duration};
 
@@ -69,7 +69,10 @@ impl<T: TimerAccessor> Sleep<T> {
 impl<T: TimerAccessor> Future for Sleep<T> {
     type Output = ();
 
-    fn poll(mut self: ::core::pin::Pin<&mut Self>, cx: &mut ::core::task::Context<'_>) -> ::core::task::Poll<Self::Output> {
+    fn poll(
+        mut self: ::core::pin::Pin<&mut Self>,
+        cx: &mut ::core::task::Context<'_>,
+    ) -> ::core::task::Poll<Self::Output> {
         let res: FutureInternalReturn<()> = match self.state {
             // We need to round deadline to the nearest millisecond (round up always) to ensure that we are not awaken before the actual deadline.
             FutureState::New => match self.drivers.register(self.rounded_deadline(), cx.waker().clone()) {
@@ -85,7 +88,7 @@ impl<T: TimerAccessor> Future for Sleep<T> {
                 } else {
                     FutureInternalReturn::polled()
                 }
-            }
+            },
             FutureState::Finished => not_recoverable_error!("Cannot be here, future is already finished"),
         };
 
@@ -119,7 +122,11 @@ mod tests {
     #[test]
     fn when_sleep_is_awaited_on_already_timeouted_time_its_ready_right_away() {
         let drv = TimeDriverMock {
-            mock: RefCell::new(MockFnBuilder::new_in_global(|_| Err(CommonErrors::AlreadyDone)).times(1).build()),
+            mock: RefCell::new(
+                MockFnBuilder::new_in_global(|_| Err(CommonErrors::AlreadyDone))
+                    .times(1)
+                    .build(),
+            ),
         };
         let sleep_future = Sleep::new(Duration::from_millis(20), Clock::now(), drv);
 

@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 use ::core::sync::atomic::Ordering;
 use kyron_foundation::{
     containers::trigger_queue::TriggerQueueConsumer,
@@ -164,14 +164,19 @@ impl WorkerInner {
                 continue;
             }
 
-            match self.consumer.pop_blocking_with_timeout(::core::time::Duration::from_millis(100)) {
+            match self
+                .consumer
+                .pop_blocking_with_timeout(::core::time::Duration::from_millis(100))
+            {
                 Ok(task_ref) => {
-                    self.local_storage.push(task_ref).expect("Failed to push task into local storage");
+                    self.local_storage
+                        .push(task_ref)
+                        .expect("Failed to push task into local storage");
                     // Storage is empty
-                }
+                },
                 Err(CommonErrors::Timeout) => {
                     continue;
-                }
+                },
                 Err(_) => todo!(),
             }
         }
@@ -185,11 +190,11 @@ impl WorkerInner {
         match task.poll(&mut ctx) {
             TaskPollResult::Done => {
                 // Literally nothing to do ;)
-            }
+            },
             TaskPollResult::Notified => {
                 // For now stupid respawn
                 self.dedicated_scheduler.spawn(task, self.id.unique_id());
-            }
+            },
         }
     }
 }

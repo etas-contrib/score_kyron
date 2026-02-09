@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 use ::core::{
     ops::{Add, Sub},
@@ -48,7 +48,11 @@ impl Sub<Duration> for Instant {
     type Output = Instant;
 
     fn sub(self, rhs: Duration) -> Self::Output {
-        Instant(self.0.checked_sub(rhs).expect("overflow when subtracting duration from instant"))
+        Instant(
+            self.0
+                .checked_sub(rhs)
+                .expect("overflow when subtracting duration from instant"),
+        )
     }
 }
 
@@ -56,7 +60,11 @@ impl Add<Duration> for Instant {
     type Output = Instant;
 
     fn add(self, rhs: Duration) -> Self::Output {
-        Instant(self.0.checked_add(rhs).expect("overflow when adding duration to instant"))
+        Instant(
+            self.0
+                .checked_add(rhs)
+                .expect("overflow when adding duration to instant"),
+        )
     }
 }
 

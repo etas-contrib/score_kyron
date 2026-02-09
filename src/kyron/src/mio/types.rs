@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 use crate::mio::registry::Registry;
 use core::{
@@ -177,7 +177,11 @@ macro_rules! impl_io_source_proxy {
                 self.$inner.register(registry, id, interest)
             }
 
-            fn reregister(&mut self, id: $crate::mio::types::IoId, interest: $crate::mio::types::IoEventInterest) -> $crate::mio::types::Result<()> {
+            fn reregister(
+                &mut self,
+                id: $crate::mio::types::IoId,
+                interest: $crate::mio::types::IoEventInterest,
+            ) -> $crate::mio::types::Result<()> {
                 self.$inner.reregister(id, interest)
             }
 

@@ -1,5 +1,5 @@
-//
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -9,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-//
+// *******************************************************************************
 
 // TODO: To be removed once used in IO APIs
 #![allow(dead_code)]
@@ -149,7 +149,11 @@ impl<'a> ReadBuf<'a> {
         // Above assert ensures no overflow
         let filled_slice_uninit = &mut self.buf[self.filled..self.filled + len];
 
-        unsafe { filled_slice_uninit.as_mut_ptr().copy_from_nonoverlapping(buf.as_ptr().cast(), buf.len()) };
+        unsafe {
+            filled_slice_uninit
+                .as_mut_ptr()
+                .copy_from_nonoverlapping(buf.as_ptr().cast(), buf.len())
+        };
 
         self.filled += len;
 
