@@ -77,6 +77,7 @@ rust_test(
     ] + _COMMON_DEPS,
 )
 
+# Examples binaries
 rust_binary(
     name = "select",
     srcs = [
@@ -93,6 +94,30 @@ rust_binary(
     name = "main_macro",
     srcs = [
         "examples/main_macro.rs",
+    ],
+    proc_macro_deps = [
+        "//src/kyron-macros:runtime_macros",
+    ],
+    visibility = ["//visibility:public"],
+    deps = _EXAMPLE_DEPS,
+)
+
+rust_binary(
+    name = "mpmc",
+    srcs = [
+        "examples/mpmc.rs",
+    ],
+    proc_macro_deps = [
+        "//src/kyron-macros:runtime_macros",
+    ],
+    visibility = ["//visibility:public"],
+    deps = _EXAMPLE_DEPS,
+)
+
+rust_binary(
+    name = "safety_task",
+    srcs = [
+        "examples/safety_task.rs",
     ],
     proc_macro_deps = [
         "//src/kyron-macros:runtime_macros",
