@@ -1,6 +1,7 @@
 # rust formatter rules.
 # check configuration fields here: https://rust-lang.github.io/rustfmt/?version=v1.6.0&search=
 
+# We need to support `cargo fmt` for crates.io
 edition = "2021"
 tab_spaces = 4
 match_block_trailing_comma = true
